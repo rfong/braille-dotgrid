@@ -127,6 +127,8 @@ def main():
                       help="grid width in braille characters")
     parser.add_option("--margin", dest="margin", type=int, default=1,
                       help="margin in dots")
+    parser.add_option("--dotsize", dest="dot_size", type=int, default=10,
+                      help="dot size in pixels")
     (options, args) = parser.parse_args()
     assert len(args)==1, "input text required"
 
@@ -134,6 +136,7 @@ def main():
     gen = BrailleImageGenerator()
 
     im = gen.convert(args[0], char_width=options.width, dot_margin=options.margin)
+    im = im.resize((im.size[0]*options.dot_size, im.size[1]*options.dot_size))
     if options.output:
         im.save(options.output)
     if options.show or not options.output:
