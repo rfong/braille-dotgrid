@@ -36,3 +36,21 @@ Options:
   --margin=MARGIN       margin in dots; default=1
   --dotsize=DOT_SIZE    dot size in pixels; default=10
 ```
+
+
+## Limitations
+
+Currently supports the following:
+```
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+0123456789
+’'! ,.;:?
+```
+
+Unsupported characters are dropped.
+
+## References
+
+- https://www.pharmabraille.com/pharmaceutical-braille/the-braille-alphabet/
+- https://www.brailletranslator.org/

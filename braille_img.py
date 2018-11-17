@@ -7,8 +7,6 @@ import string
 from typedecorator import params, returns, setup_typecheck
 
 
-# https://www.pharmabraille.com/pharmaceutical-braille/the-braille-alphabet/
-
 # Maps "[0-9]" string char up in ASCII space to [a-j]
 @returns(str)
 @params(c=str)
