@@ -60,24 +60,35 @@ class BrailleImageGenerator:
         if self.braille == None:
             self.braille = json.loads(open("braille.json","r").read())
 
-    @staticmethod
-    def normalize(text):
-        '''Normalize for multi-Braille-character string characters'''
-        #chr(ord(ch) + ord('a') - ord('0'))
+        # Create alphabet of single characters we know how to handle.
+        self.alphabet = "0123456789" + "".join(
+            filter(lambda key: len(key) == 1, self.braille.keys()))
 
-        # Braille "[0-9]" translates up in ASCII space to "#[a-j]".
-        # The lambda extracts captures and translates group \1.
+    def normalize(self, text):
+        '''Normalize for multi-Braille-character string characters'''
+        text = text.lower()
+
+        # For now, drop any characters we don't know how to handle.
+        filtered_text = filter(self.alphabet.__contains__, text)
+        if text != filtered_text:
+            print "Dropping disallowed characters; filtered to:"
+            print filtered_text
+            text = filtered_text
+
+        # Numerals. Braille "[0-9]" translates up in ASCII space to "#[a-j]".
         text = re.sub('([0-9]+)',
+            # The lambda translates capture group \1.
             lambda match: "#" + ''.join(numeral_to_character(c) for c in match.group(1)),
             text,
         )
+
         return text
 
     @returns([np.ndarray])
     @params(self=object, text=str)
     def text_to_braille(self, text):
         '''Translates text into braille chars represented as 2x3 numpy arrays'''
-        text = text.lower()
+        text = self.normalize(text)
         return [np.array(self.braille[ch]) for ch in text]
 
     @returns(np.ndarray)
@@ -104,25 +115,36 @@ class BrailleImageGenerator:
     #    return np.vstack((a,b)).reshape((-1,), order='F')
 
     @returns(Image.Image)
-    @params(self=object, text=str, char_width=int, dot_margin=int)
-    def convert(self, text, char_width=10, dot_margin=1):
+    @params(self=object, lines=[str], char_width=int, dot_margin=int)
+    def convert(self, lines, char_width=10, dot_margin=1):
         '''Convert text to a braille representation on a wrapped spaced grid'''
+        pixels = np.vstack(
+            self.text_line_to_pixels(
+                line, char_width=char_width, dot_margin=dot_margin)
+            for line in lines)
+        return Image.fromarray(pixels.astype('uint8')*255)
+
+    @returns(np.ndarray)
+    @params(self=object, text=str, char_width=int, dot_margin=int)
+    def text_line_to_pixels(self, text, char_width=10, dot_margin=1):
         pixels = dotgrid_to_pixels(
             self.braille_to_dotgrid(
                 self.text_to_braille(text), width=char_width))
         pixels = add_margin(pixels, dot_margin)
-        return Image.fromarray(pixels.astype('uint8')*255)
+        return pixels
     #im = im.convert('L')
     #im = ImageOps.invert(im)
     #im = im.convert('1')
 
 
 def main():
-    parser = OptionParser(usage="usage: %prog [options] inputtext")
+    parser = OptionParser(usage="usage: %prog [options] text")
+    parser.add_option("-f", "--file", dest="input", type=str,
+                      help="input file path; takes precedence over `text` arg")
     parser.add_option("-o", "--output", dest="output", type=str,
                       help="output file path")
     parser.add_option("--show", dest="show", action="store_true",
-                      help="show image (defaults to true if no output file specified)")
+                      help="show image (defaults to true if no output specified)")
     parser.add_option("--width", dest="width", type=int, default=10,
                       help="grid width in braille characters")
     parser.add_option("--margin", dest="margin", type=int, default=1,
@@ -130,12 +152,19 @@ def main():
     parser.add_option("--dotsize", dest="dot_size", type=int, default=10,
                       help="dot size in pixels")
     (options, args) = parser.parse_args()
-    assert len(args)==1, "input text required"
+
+    text_lines = args
+    if options.input:
+        if len(args)>0:
+            print "Ignoring text input; using file"
+        text_lines = [line.strip() for line in open(options.input, 'r').readlines()]
+    else:
+        assert len(args)==1, "Must provide input"
 
     setup_typecheck()
     gen = BrailleImageGenerator()
 
-    im = gen.convert(args[0], char_width=options.width, dot_margin=options.margin)
+    im = gen.convert(text_lines, char_width=options.width, dot_margin=options.margin)
     im = im.resize((im.size[0]*options.dot_size, im.size[1]*options.dot_size))
     if options.output:
         im.save(options.output)

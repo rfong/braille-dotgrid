@@ -38,12 +38,12 @@ class TestBrailleImageGenerator(unittest.TestCase):
         self.assertEqual(grid.shape, (6, 2*6))
 
     def test_normalize(self):
+        self.assertEqual(self.gen.normalize("AlpHabEtiCAL"), "alphabetical")
+        self.assertEqual(self.gen.normalize("test123!"), "test#bcd!")
+        # Should drop non-allowed characters
         self.assertEqual(
-            BrailleImageGenerator.normalize("unchanged"),
-            "unchanged")
-        self.assertEqual(
-            BrailleImageGenerator.normalize("test123!"),
-            "test#bcd!")
+            self.gen.normalize("test^* foo123$$bar/"),
+            "test foo#bcdbar")
 
     def test_numeral_to_character(self):
         self.assertEqual(numeral_to_character("0"), "a")
