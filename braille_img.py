@@ -7,6 +7,11 @@ import string
 from typedecorator import params, returns, setup_typecheck
 
 
+CURLY_QUOTE_SINGLE_LEFT = u'\u2018'
+CURLY_QUOTE_SINGLE_RIGHT = u'\u2019'
+CURLY_QUOTE_DOUBLE_LEFT = u'\u201c'
+CURLY_QUOTE_DOUBLE_RIGHT = u'\u201d'
+
 # Maps "[0-9]" string char up in ASCII space to [a-j]
 @returns(str)
 @params(c=str)
@@ -63,12 +68,28 @@ class BrailleImageGenerator:
         '''Normalize for multi-Braille-character string characters'''
         text = text.lower()
 
+        # Convert double to single quotes since we don't handle them yet
+        new_text = re.sub(
+            u'["%s%s]' % (CURLY_QUOTE_DOUBLE_LEFT, CURLY_QUOTE_DOUBLE_RIGHT),
+            "'", text)
+        if text != new_text:
+            print "Converting double quotes to single quotes; not handled yet"
+            text = new_text
+
+        # Convert smart quotes to plain quotes since we don't handle them yet.
+        new_text = re.sub(
+            u'["%s%s]' % (CURLY_QUOTE_SINGLE_LEFT, CURLY_QUOTE_SINGLE_RIGHT),
+            "'", text)
+        if text != new_text:
+            print "Converting smart quotes to plain quotes; not handled yet"
+            text = new_text
+
         # For now, drop any characters we don't know how to handle.
-        filtered_text = filter(self.alphabet.__contains__, text)
-        if text != filtered_text:
+        new_text = filter(self.alphabet.__contains__, text)
+        if text != new_text:
             print "Dropping disallowed characters; filtered to:"
-            print filtered_text
-            text = filtered_text
+            print new_text
+            text = new_text
 
         # Numerals. Braille "[0-9]" translates up in ASCII space to "#[a-j]".
         text = re.sub('([0-9]+)',

@@ -40,6 +40,13 @@ class TestBrailleImageGenerator(unittest.TestCase):
     def test_normalize(self):
         self.assertEqual(self.gen.normalize("AlpHabEtiCAL"), "alphabetical")
         self.assertEqual(self.gen.normalize("test123!"), "test#bcd!")
+        # Should convert unsupported quotes to supported
+        self.assertEqual(self.gen.normalize("'\"" + ''.join([
+            CURLY_QUOTE_DOUBLE_LEFT,
+            CURLY_QUOTE_DOUBLE_RIGHT,
+            CURLY_QUOTE_SINGLE_LEFT,
+            CURLY_QUOTE_SINGLE_RIGHT,
+        ])), "''''''")
         # Should drop non-allowed characters
         self.assertEqual(
             self.gen.normalize("test^* foo123$$bar/"),

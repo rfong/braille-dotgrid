@@ -53,13 +53,14 @@ Currently supports the following:
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 abcdefghijklmnopqrstuvwxyz
 0123456789
-’'! ,.;:?
+'! ,.;:?
 ```
 
-Unsupported characters are dropped.
+Curly and double quotation marks are converted to `'`.
+Otherwise, unsupported characters are dropped.
 
 ### Todo
-+ curly and double quotation marks
++ proper support for curly and double quotation marks
 + parentheses
 + slashes
 + hyphens, dashes
