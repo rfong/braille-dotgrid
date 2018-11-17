@@ -19,6 +19,11 @@ pip install -r requirements.txt
 
 ![](examples/hello6.bmp)
 
+- Wider padding/margins: 
+`python braille_img.py --padding=2 --margin=5 'more spread out grid'`
+
+![](examples/spread.bmp)
+
 - File I/O: `python braille_img.py --file=hello.txt --output=hello.bmp`
 
 ```
@@ -34,6 +39,7 @@ Options:
                         specified)
   --width=WIDTH         grid width in braille characters; default=10
   --margin=MARGIN       margin in dots; default=1
+  --padding=PADDING     padding in dots; default=1
   --dotsize=DOT_SIZE    dot size in pixels; default=10
 ```
 

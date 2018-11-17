@@ -17,25 +17,25 @@ def numeral_to_character(c):
     return chr(ord(c) + ord('a') - ord('0'))
 
 @returns(np.ndarray)
-@params(arr=np.ndarray)
-def interleave_rows_with_zeros(arr):
+@params(arr=np.ndarray, zeroed_rows=int)
+def interleave_rows_with_zeros(arr, zeroed_rows=1):
     '''Interleave a 2D numpy array with zeroed rows.'''
-    return np.hstack([arr, np.zeros_like(arr)]).reshape(
-        arr.shape[0]*2, arr.shape[1])
+    return np.hstack([arr] + [np.zeros_like(arr)]*zeroed_rows).reshape(
+        arr.shape[0]*(1+zeroed_rows), arr.shape[1])
 
 @returns(np.ndarray)
-@params(grid=np.ndarray, spacing=int)
-def dotgrid_to_pixels(grid, spacing=1):
+@params(grid=np.ndarray, padding=int)
+def dotgrid_to_pixels(grid, padding=1):
     '''
     Adds empty padding to dotgrid. `spacing` represents how many dots' width
     of padding will go between each dot of information.
     '''
-    # Interleave rows, transpose to interleave columns-as-rows, transpose back
-    grid = interleave_rows_with_zeros(
-        interleave_rows_with_zeros(grid).transpose()
-    ).transpose()
-    # Now chop off the last row and col, which are empty
-    return grid[0:-1, 0:-1]
+    # Interleave rows
+    grid = interleave_rows_with_zeros(grid, zeroed_rows=padding)
+    # transpose to interleave columns-as-rows, transpose back
+    grid = interleave_rows_with_zeros(grid.transpose(), zeroed_rows=padding).transpose()
+    # Now chop off the empty outer padding
+    return grid[0:-padding, 0:-padding]
 
 @returns(np.ndarray)
 @params(grid=np.ndarray, margin=int)
@@ -109,21 +109,22 @@ class BrailleImageGenerator:
         ]))
 
     @returns(Image.Image)
-    @params(self=object, lines=[str], char_width=int, dot_margin=int)
-    def convert(self, lines, char_width=10, dot_margin=1):
+    @params(self=object, lines=[str], char_width=int, dot_margin=int, dot_padding=int)
+    def convert(self, lines, char_width=10, dot_margin=1, dot_padding=1):
         '''Convert text to a braille representation on a wrapped spaced grid'''
         pixels = np.vstack(
             self.text_line_to_pixels(
-                line, char_width=char_width, dot_margin=dot_margin)
+                line, char_width, dot_margin, dot_padding)
             for line in lines)
         return Image.fromarray(pixels.astype('uint8')*255)
 
     @returns(np.ndarray)
-    @params(self=object, text=str, char_width=int, dot_margin=int)
-    def text_line_to_pixels(self, text, char_width=10, dot_margin=1):
+    @params(self=object, text=str, char_width=int, dot_margin=int, dot_padding=int)
+    def text_line_to_pixels(self, text, char_width, dot_margin, dot_padding):
         pixels = dotgrid_to_pixels(
             self.braille_to_dotgrid(
-                self.text_to_braille(text), width=char_width))
+                self.text_to_braille(text), width=char_width),
+            padding=dot_padding)
         pixels = add_margin(pixels, dot_margin)
         return pixels
 
@@ -140,6 +141,8 @@ def main():
                       help="grid width in braille characters; default=10")
     parser.add_option("--margin", dest="margin", type=int, default=1,
                       help="margin in dots")
+    parser.add_option("--padding", dest="padding", type=int, default=1,
+                      help="padding in dots")
     parser.add_option("--dotsize", dest="dot_size", type=int, default=10,
                       help="dot size in pixels")
     (options, args) = parser.parse_args()
@@ -155,7 +158,12 @@ def main():
     setup_typecheck()
     gen = BrailleImageGenerator()
 
-    im = gen.convert(text_lines, char_width=options.width, dot_margin=options.margin)
+    im = gen.convert(
+        text_lines,
+        char_width=options.width,
+        dot_margin=options.margin,
+        dot_padding=options.padding,
+    )
     im = im.resize((im.size[0]*options.dot_size, im.size[1]*options.dot_size))
     if options.output:
         im.save(options.output)
