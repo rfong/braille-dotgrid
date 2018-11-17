@@ -110,10 +110,6 @@ class BrailleImageGenerator:
             for row_index in xrange(len(brs)/width)
         ]))
 
-    #def interleave(a, b):
-    #    '''interleave two 1D numpy arrays'''
-    #    return np.vstack((a,b)).reshape((-1,), order='F')
-
     @returns(Image.Image)
     @params(self=object, lines=[str], char_width=int, dot_margin=int)
     def convert(self, lines, char_width=10, dot_margin=1):
@@ -132,9 +128,6 @@ class BrailleImageGenerator:
                 self.text_to_braille(text), width=char_width))
         pixels = add_margin(pixels, dot_margin)
         return pixels
-    #im = im.convert('L')
-    #im = ImageOps.invert(im)
-    #im = im.convert('1')
 
 
 def main():
