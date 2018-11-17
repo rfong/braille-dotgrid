@@ -13,12 +13,13 @@ Wrapping is irrespective of word boundaries; this is a stylistic generator for p
 pip install -r requirements.txt
 ```
 
-## Usage
+## Usage examples
 
-Example: `python braille_img.py --width=6 'Hello world!'`
+- `python braille_img.py --width=6 'Hello world!'`
+
 ![](examples/hello6.bmp)
 
-Example: `python braille_img.py --file=hello.txt`
+- File I/O: `python braille_img.py --file=hello.txt --output=hello.bmp`
 
 ```
 Usage: python braille_img.py [options] text
