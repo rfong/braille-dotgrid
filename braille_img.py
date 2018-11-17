@@ -26,10 +26,7 @@ def interleave_rows_with_zeros(arr, zeroed_rows=1):
 @returns(np.ndarray)
 @params(grid=np.ndarray, padding=int)
 def dotgrid_to_pixels(grid, padding=1):
-    '''
-    Adds empty padding to dotgrid. `spacing` represents how many dots' width
-    of padding will go between each dot of information.
-    '''
+    '''Adds empty padding to dotgrid.'''
     # Interleave rows
     grid = interleave_rows_with_zeros(grid, zeroed_rows=padding)
     # transpose to interleave columns-as-rows, transpose back
@@ -108,25 +105,29 @@ class BrailleImageGenerator:
             for row_index in xrange(len(brs)/width)
         ]))
 
-    @returns(Image.Image)
-    @params(self=object, lines=[str], char_width=int, dot_margin=int, dot_padding=int)
-    def convert(self, lines, char_width=10, dot_margin=1, dot_padding=1):
-        '''Convert text to a braille representation on a wrapped spaced grid'''
-        pixels = np.vstack(
-            self.text_line_to_pixels(
-                line, char_width, dot_margin, dot_padding)
-            for line in lines)
-        return Image.fromarray(pixels.astype('uint8')*255)
-
     @returns(np.ndarray)
     @params(self=object, text=str, char_width=int, dot_margin=int, dot_padding=int)
     def text_line_to_pixels(self, text, char_width, dot_margin, dot_padding):
+        '''
+        Convert a single line of text to a braille representation on a wrapped
+        spaced grid.
+        '''
         pixels = dotgrid_to_pixels(
             self.braille_to_dotgrid(
                 self.text_to_braille(text), width=char_width),
             padding=dot_padding)
         pixels = add_margin(pixels, dot_margin)
         return pixels
+
+    @returns(Image.Image)
+    @params(self=object, lines=[str], char_width=int, dot_margin=int, dot_padding=int)
+    def convert(self, lines, char_width=10, dot_margin=1, dot_padding=1):
+        '''Convert multiline text to a braille dotgrid image representation'''
+        pixels = np.vstack(
+            self.text_line_to_pixels(
+                line, char_width, dot_margin, dot_padding)
+            for line in lines)
+        return Image.fromarray(pixels.astype('uint8')*255)
 
 
 def main():
@@ -147,6 +148,7 @@ def main():
                       help="dot size in pixels")
     (options, args) = parser.parse_args()
 
+    # Obtain text input
     text_lines = args
     if options.input:
         if len(args)>0:
@@ -155,9 +157,11 @@ def main():
     else:
         assert len(args)==1, "Must provide input"
 
+    # Setup
     setup_typecheck()
     gen = BrailleImageGenerator()
 
+    # Generate image
     im = gen.convert(
         text_lines,
         char_width=options.width,

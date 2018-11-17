@@ -33,7 +33,8 @@ Usage: python braille_img.py [options] text
 Options:
   -h, --help            show this help message and exit
   -f INPUT, --file=INPUT
-                        input file path; takes precedence over `text` arg
+                        input file path; takes precedence over `text` arg.
+												newlines in files will be respected.
   -o OUTPUT, --output=OUTPUT
                         output file path
   --show                show image (defaults to true if no output file
