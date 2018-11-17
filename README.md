@@ -15,11 +15,11 @@ pip install -r requirements.txt
 
 ## Usage examples
 
-`python braille_img.py --width=6 'Hello world!'`
+- `python braille_img.py --width=6 'Hello world!'`
 
 ![](examples/hello6.bmp)
 
-File input: `python braille_img.py --file=hello.txt`
+- File I/O: `python braille_img.py --file=hello.txt --output=hello.bmp`
 
 ```
 Usage: python braille_img.py [options] text
