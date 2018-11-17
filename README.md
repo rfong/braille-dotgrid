@@ -58,6 +58,14 @@ abcdefghijklmnopqrstuvwxyz
 
 Unsupported characters are dropped.
 
+### Todo
++ curly and double quotation marks
++ parentheses
++ slashes
++ hyphens, dashes
++ international characters
+
+
 ## References
 
 - https://www.pharmabraille.com/pharmaceutical-braille/the-braille-alphabet/
