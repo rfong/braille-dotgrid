@@ -138,7 +138,7 @@ class BrailleImageGenerator:
 
 
 def main():
-    parser = OptionParser(usage="usage: %prog [options] text")
+    parser = OptionParser(usage="usage: python %prog [options] text")
     parser.add_option("-f", "--file", dest="input", type=str,
                       help="input file path; takes precedence over `text` arg")
     parser.add_option("-o", "--output", dest="output", type=str,
@@ -146,7 +146,7 @@ def main():
     parser.add_option("--show", dest="show", action="store_true",
                       help="show image (defaults to true if no output specified)")
     parser.add_option("--width", dest="width", type=int, default=10,
-                      help="grid width in braille characters")
+                      help="grid width in braille characters; default=10")
     parser.add_option("--margin", dest="margin", type=int, default=1,
                       help="margin in dots")
     parser.add_option("--dotsize", dest="dot_size", type=int, default=10,
