@@ -2,7 +2,8 @@ braille-dotgrid
 -----
 
 Generates a braille dotgrid image from text.
-Wrapping is irrespective of word boundaries; this is a stylistic generator for puzzle purposes.
+
+Wrapping is irrespective of word boundaries and readability concerns like line spacing are sacrificed; this is a stylistic generator for puzzle purposes.
 
 ![alphabet](examples/alphabet.bmp)
 
