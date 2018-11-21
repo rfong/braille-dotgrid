@@ -3,7 +3,7 @@ braille-dotgrid
 
 Generates a braille dotgrid image from text.
 
-Wrapping is irrespective of word boundaries and readability concerns like line spacing are sacrificed; this is a stylistic generator for puzzle purposes.
+Wrapping is irrespective of word boundaries, and readability concerns like line spacing are sacrificed; this is a stylistic generator for puzzle purposes.
 
 ![alphabet](examples/alphabet.bmp)
 
@@ -35,7 +35,7 @@ Options:
   -h, --help            show this help message and exit
   -f INPUT, --file=INPUT
                         input file path; takes precedence over `text` arg.
-												newlines in files will be respected.
+                        newlines in files will be respected.
   -o OUTPUT, --output=OUTPUT
                         output file path
   --show                show image (defaults to true if no output file
